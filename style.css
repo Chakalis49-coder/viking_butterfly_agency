@@ -183,6 +183,24 @@ body {
 		0 0 20px #1a3a6b;
 }
 
+.blink {
+	animation: blink 1s infinite;
+}
+
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.3;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
 /* =========================
    ✅ EVENT WIDGET
 ========================= */
@@ -298,11 +316,11 @@ body {
 			#CD7F32 80%,
 			#8B5A2B 100%);
 	border: none;
-	color: white;
+	color: black;
 	font-weight: bold;
 	text-shadow:
-		0 0 3px rgba(0, 0, 0, .9),
-		0 1px 2px rgba(0, 0, 0, .8);
+		0 0 3px rgba(212, 175, 55, .9),
+		0 1px 2px rgba(212, 175, 55, .8);
 	box-shadow: 0 0 10px #000;
 	cursor: pointer;
 	transition: 0.3s;

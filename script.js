@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // =========================
-    // ✅ PATH AUTO
-    // =========================
     const isSubPage = window.location.pathname.includes("/pages/");
 
     const MATCHS_PATH = isSubPage ? "../matchs.json" : "matchs.json";
@@ -30,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentEvent = null;
 
     // =========================
-    // ✅ MATCHS (15 MIN AVANT/APRÈS)
+    // ✅ MATCHS
     // =========================
     fetch(MATCHS_PATH)
         .then(res => res.json())
@@ -64,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const card = document.createElement("div");
                     card.classList.add("event-card");
 
-                    const id = "count-" + event.date.replace(/-/g, "");
+                    const id = "count-" + event.date.replace(/-/g, "") + event.heure.replace(":", "");
+
                     const imagePath = isSubPage ? "../" + event.image : event.image;
 
                     card.innerHTML = `
@@ -82,18 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     startMatchCountdown(event.date, event.heure, id);
 
-                    // ✅ CALENDAR
-                    const btn = card.querySelector(".calendar-btn");
-                    btn.addEventListener("click", () => {
+                    // CALENDAR
+                    card.querySelector(".calendar-btn").addEventListener("click", () => {
                         const date = event.date.replace(/-/g, "");
                         const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${date}/${date}`;
                         window.open(url, "_blank");
                     });
 
-                    // ✅ SHARE
-                    const shareBtn = card.querySelector(".share-btn");
-
-                    shareBtn.addEventListener("click", async () => {
+                    // SHARE
+                    card.querySelector(".share-btn").addEventListener("click", async () => {
 
                         const text = `${event.title}
 📅 ${formatDate(event.date)}
@@ -105,7 +100,6 @@ https://www.tiktok.com/${event.alias}`;
                         const imageUrl = isSubPage ? "../" + event.image : event.image;
 
                         if (navigator.share && navigator.canShare) {
-
                             try {
                                 const response = await fetch(imageUrl);
                                 const blob = await response.blob();
@@ -116,7 +110,6 @@ https://www.tiktok.com/${event.alias}`;
                                     text: text,
                                     files: [file]
                                 });
-
                             } catch {
                                 await navigator.share({
                                     title: event.title,
@@ -124,7 +117,6 @@ https://www.tiktok.com/${event.alias}`;
                                     url: `https://www.tiktok.com/${event.alias}`
                                 });
                             }
-
                         } else {
                             navigator.clipboard.writeText(text);
                             alert("Texte copié 📋");
@@ -132,115 +124,41 @@ https://www.tiktok.com/${event.alias}`;
                     });
                 });
             }
-
-            // ✅ WIDGET BUTTONS
-            const calendarBtn = document.getElementById("calendarBtn");
-            if (calendarBtn) {
-                calendarBtn.addEventListener("click", () => {
-                    if (!currentEvent) return;
-
-                    const date = currentEvent.date.replace(/-/g, "");
-                    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(currentEvent.title)}&dates=${date}/${date}`;
-                    window.open(url, "_blank");
-                });
-            }
-
-            const shareBtnWidget = document.getElementById("shareBtn");
-            if (shareBtnWidget) {
-                shareBtnWidget.addEventListener("click", async () => {
-
-                    if (!currentEvent) return;
-
-                    const text = `${currentEvent.title}
-📅 ${formatDate(currentEvent.date)}
-🕒 ${currentEvent.heure}
-
-🔥 Rejoins-nous en live !
-https://www.tiktok.com/${currentEvent.alias}`;
-
-                    if (navigator.share && navigator.canShare) {
-                        try {
-                            const response = await fetch(currentEvent.image);
-                            const blob = await response.blob();
-                            const file = new File([blob], "event.jpg", { type: blob.type });
-
-                            await navigator.share({
-                                title: currentEvent.title,
-                                text: text,
-                                files: [file]
-                            });
-                        } catch {
-                            await navigator.share({
-                                title: currentEvent.title,
-                                text: text,
-                                url: `https://www.tiktok.com/${currentEvent.alias}`
-                            });
-                        }
-                    } else {
-                        navigator.clipboard.writeText(text);
-                        alert("Texte copié 📋");
-                    }
-                });
-            }
-        })
-        .catch(err => console.error("Erreur matchs:", err));
+        });
 
     // =========================
-    // ✅ EVENTS (START / END)
+    // ✅ EVENTS + CHALLENGE
     // =========================
-    fetch(EVENTS_PATH)
-        .then(res => res.json())
-        .then(event => {
+    function loadRange(path) {
+        fetch(path)
+            .then(res => res.json())
+            .then(data => {
 
-            if (!document.getElementById("challenge-title")) return;
+                if (!document.getElementById("challenge-title")) return;
 
-            document.getElementById("challenge-title").textContent = event.title;
-            document.getElementById("challenge-date").textContent =
-                "📅 " + formatDate(event.date_start) + " → " + formatDate(event.date_end);
+                document.getElementById("challenge-title").textContent = data.title;
+                document.getElementById("challenge-date").textContent =
+                    "📅 " + formatDate(data.date_start) + " → " + formatDate(data.date_end);
 
-            document.getElementById("challenge-heure").textContent =
-                "🕒 " + event.heure_start + " → " + event.heure_end;
+                document.getElementById("challenge-heure").textContent =
+                    "🕒 " + data.heure_start + " → " + data.heure_end;
 
-            document.getElementById("challenge-image").src = event.image;
+                document.getElementById("challenge-image").src = data.image;
 
-            startRangeCountdown(
-                event.date_start,
-                event.heure_start,
-                event.date_end,
-                event.heure_end,
-                "challenge-countdown"
-            );
-        })
-        .catch(err => console.error("Erreur events:", err));
+                startRangeCountdown(
+                    data.date_start,
+                    data.heure_start,
+                    data.date_end,
+                    data.heure_end,
+                    "challenge-countdown"
+                );
+            });
+    }
 
-    // =========================
-    // ✅ CHALLENGE
-    // =========================
-    fetch(CHALLENGE_PATH)
-        .then(res => res.json())
-        .then(challenge => {
-
-            document.getElementById("challenge-title").textContent = challenge.title;
-            document.getElementById("challenge-date").textContent =
-                "📅 " + formatDate(challenge.date_start) + " → " + formatDate(challenge.date_end);
-
-            document.getElementById("challenge-heure").textContent =
-                "🕒 " + challenge.heure_start + " → " + challenge.heure_end;
-
-            document.getElementById("challenge-image").src = challenge.image;
-
-            startRangeCountdown(
-                challenge.date_start,
-                challenge.heure_start,
-                challenge.date_end,
-                challenge.heure_end,
-                "challenge-countdown"
-            );
-        })
-        .catch(err => console.error("Erreur challenge:", err));
+    loadRange(EVENTS_PATH);
+    loadRange(CHALLENGE_PATH);
 
 });
-
 
 // =========================
 // ✅ FORMAT DATE
@@ -254,9 +172,23 @@ function formatDate(dateStr) {
     });
 }
 
+// =========================
+// ✅ FORMAT COUNTDOWN SMART
+// =========================
+function formatCountdown(diff) {
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    if (d > 0) return `${d}j ${h}h ${m}m ${s}s`;
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    return `${m}m ${s}s`;
+}
 
 // =========================
-// ✅ MATCH COUNTDOWN (15 MIN)
+// ✅ MATCH COUNTDOWN
 // =========================
 function startMatchCountdown(dateStr, heureStr, elementId) {
 
@@ -264,28 +196,29 @@ function startMatchCountdown(dateStr, heureStr, elementId) {
     if (!el) return;
 
     const baseTime = new Date(`${dateStr}T${heureStr}:00`).getTime();
-
     const startTime = baseTime - (15 * 60 * 1000);
     const endTime = baseTime + (15 * 60 * 1000);
 
     function update() {
 
-        const now = new Date().getTime();
+        const now = Date.now();
 
         if (now < startTime) {
+
+            el.classList.remove("blink");
             const diff = startTime - now;
-
-            const m = Math.floor((diff / (1000 * 60)) % 60);
-            const s = Math.floor((diff / 1000) % 60);
-
-            el.textContent = `⏳ Début dans ${m}m ${s}s`;
+            el.textContent = `⏳ Début dans ${formatCountdown(diff)}`;
         }
 
         else if (now >= startTime && now <= endTime) {
+
             el.textContent = "🔥 EN COURS";
+            el.classList.add("blink");
         }
 
         else {
+
+            el.classList.remove("blink");
             el.textContent = "✅ TERMINÉ";
         }
     }
@@ -293,7 +226,6 @@ function startMatchCountdown(dateStr, heureStr, elementId) {
     update();
     setInterval(update, 1000);
 }
-
 
 // =========================
 // ✅ RANGE COUNTDOWN
@@ -308,24 +240,24 @@ function startRangeCountdown(dateStart, heureStart, dateEnd, heureEnd, elementId
 
     function update() {
 
-        const now = new Date().getTime();
+        const now = Date.now();
 
         if (now < start) {
 
+            el.classList.remove("blink");
             const diff = start - now;
-
-            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const m = Math.floor((diff / (1000 * 60)) % 60);
-
-            el.textContent = `⏳ ${d}j ${h}h ${m}m`;
+            el.textContent = `⏳ ${formatCountdown(diff)}`;
         }
 
         else if (now >= start && now <= end) {
+
             el.textContent = "🔥 EN COURS";
+            el.classList.add("blink");
         }
 
         else {
+
+            el.classList.remove("blink");
             el.textContent = "✅ TERMINÉ";
         }
     }
