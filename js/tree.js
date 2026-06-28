@@ -1,5 +1,5 @@
 const width = 850;
-const height = 1100; // ✅ un peu plus grand pour éviter coupure
+const height = 550; // ✅ un peu plus grand pour éviter coupure
 const offsetY = -20;
 
 // ✅ SVG RESPONSIVE (FIX PRINCIPAL)
