@@ -6,134 +6,88 @@ document.addEventListener("DOMContentLoaded", () => {
     const EVENTS_PATH = isSubPage ? "../events.json" : "events.json";
     const CHALLENGE_PATH = isSubPage ? "../challenge.json" : "challenge.json";
 
-    // =========================
-    // ✅ MENU BURGER
-    // =========================
-    const hamburger = document.getElementById("hamburger") || document.querySelector(".hamburger");
-    const navLinks = document.getElementById("navLinks") || document.querySelector(".nav-links");
+    // ✅ MENU
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
 
-    if (hamburger && navLinks) {
+    if (hamburger) {
         hamburger.addEventListener("click", () => {
             navLinks.classList.toggle("active");
         });
-
-        document.querySelectorAll(".nav-links a").forEach(link => {
-            link.addEventListener("click", () => {
-                navLinks.classList.remove("active");
-            });
-        });
     }
 
-    let currentEvent = null;
-
     // =========================
-    // ✅ MATCHS
+    // ✅ MATCH
     // =========================
     fetch(MATCHS_PATH)
         .then(res => res.json())
-        .then(events => {
+        .then(data => {
 
             const now = new Date();
 
-            const nextEvent = events
+            const next = data
                 .map(e => ({ ...e, dateObj: new Date(e.date + "T" + e.heure) }))
                 .filter(e => e.dateObj >= now)
                 .sort((a, b) => a.dateObj - b.dateObj)[0];
 
-            if (nextEvent && document.getElementById("event-title")) {
+            if (!next) return;
 
-                currentEvent = nextEvent;
+            document.getElementById("match-title").textContent = next.title;
+            document.getElementById("match-date").textContent = "📅 " + formatDate(next.date);
+            document.getElementById("match-heure").textContent = "🕒 " + next.heure;
+            document.getElementById("match-image").src = next.image;
 
-                document.getElementById("event-title").textContent = nextEvent.title;
-                document.getElementById("event-date").textContent = "📅 " + formatDate(nextEvent.date);
-                document.getElementById("event-heure").textContent = "🕒 " + nextEvent.heure;
-                document.getElementById("event-image").src = nextEvent.image;
-
-                const el = document.getElementById("event-countdown");
-                if (el) el.classList.add("countdown");
-
-                startMatchCountdown(nextEvent.date, nextEvent.heure, "event-countdown");
-            }
-
-            const container = document.getElementById("events-container");
-
-            if (container) {
-
-                events.forEach(event => {
-
-                    const card = document.createElement("div");
-                    card.classList.add("event-card");
-
-                    const id = "count-" + event.date.replace(/-/g, "") + event.heure.replace(":", "");
-                    const imagePath = isSubPage ? "../" + event.image : event.image;
-
-                    card.innerHTML = `
-                        <img src="${imagePath}" alt="event">
-                        <h3>${event.title}</h3>
-                        <p>📅 ${formatDate(event.date)}</p>
-                        <p class="event-heure">🕒 ${event.heure}</p>
-                        <p class="countdown" id="${id}"></p>
-
-                        <button class="calendar-btn">Ajouter au calendrier</button>
-                        <button class="share-btn">Partager</button>
-                    `;
-
-                    container.appendChild(card);
-
-                    startMatchCountdown(event.date, event.heure, id);
-
-                    card.querySelector(".calendar-btn").addEventListener("click", () => {
-                        const date = event.date.replace(/-/g, "");
-                        const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${date}/${date}`;
-                        window.open(url, "_blank");
-                    });
-
-                    card.querySelector(".share-btn").addEventListener("click", async () => {
-
-                        const text = `${event.title}
-📅 ${formatDate(event.date)}
-🕒 ${event.heure}
-
-🔥 Rejoins-nous en live !
-https://www.tiktok.com/${event.alias}`;
-
-                        if (navigator.share) {
-                            await navigator.share({ title: event.title, text });
-                        } else {
-                            navigator.clipboard.writeText(text);
-                            alert("Texte copié 📋");
-                        }
-                    });
-                });
-            }
+            startMatchCountdown(next.date, next.heure, "match-countdown");
         });
 
     // =========================
-    // ✅ CHALLENGE (PRIORITAIRE)
+    // ✅ EVENT
+    // =========================
+    fetch(EVENTS_PATH)
+        .then(res => res.json())
+        .then(event => {
+
+            if (!document.getElementById("event-title")) return;
+
+            document.getElementById("event-title").textContent = event.title;
+            document.getElementById("event-date").textContent =
+                "📅 " + formatDate(event.date_start);
+
+            document.getElementById("event-heure").textContent =
+                "🕒 " + event.heure_start;
+
+            document.getElementById("event-image").src = event.image;
+
+            startRangeCountdown(
+                event.date_start,
+                event.heure_start,
+                event.date_end,
+                event.heure_end,
+                "event-countdown"
+            );
+        });
+
+    // =========================
+    // ✅ CHALLENGE
     // =========================
     fetch(CHALLENGE_PATH)
         .then(res => res.json())
-        .then(data => {
+        .then(challenge => {
 
-            if (!document.getElementById("challenge-title")) return;
-
-            document.getElementById("challenge-title").textContent = data.title;
+            document.getElementById("challenge-title").textContent = challenge.title;
             document.getElementById("challenge-date").textContent =
-                "📅 " + formatDate(data.date_start) + " → " + formatDate(data.date_end);
+                "📅 " + formatDate(challenge.date_start) + " → " + formatDate(challenge.date_end);
 
             document.getElementById("challenge-heure").textContent =
-                "🕒 " + data.heure_start + " → " + data.heure_end;
+                "🕒 " + challenge.heure_start + " → " + challenge.heure_end;
 
-            document.getElementById("challenge-image").src = data.image;
-
-            const el = document.getElementById("challenge-countdown");
-            if (el) el.classList.add("countdown");
+            document.getElementById("challenge-image").src = challenge.image;
 
             startRangeCountdown(
-                data.date_start,
-                data.heure_start,
-                data.date_end,
-                data.heure_end,
+                challenge.date_start,
+                challenge.heure_start,
+                challenge.date_end,
+                challenge.heure_end,
                 "challenge-countdown"
             );
         });
@@ -144,8 +98,7 @@ https://www.tiktok.com/${event.alias}`;
 // ✅ FORMAT DATE
 // =========================
 function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("fr-FR", {
+    return new Date(dateStr).toLocaleDateString("fr-FR", {
         day: "numeric",
         month: "long",
         year: "numeric"
@@ -175,28 +128,23 @@ function startMatchCountdown(dateStr, heureStr, elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
 
-    const baseTime = new Date(`${dateStr}T${heureStr}:00`).getTime();
-    const startTime = baseTime - (15 * 60 * 1000);
-    const endTime = baseTime + (15 * 60 * 1000);
+    const base = new Date(`${dateStr}T${heureStr}:00`).getTime();
+    const start = base - 15 * 60 * 1000;
+    const end = base + 15 * 60 * 1000;
 
     function update() {
 
         const now = Date.now();
 
-        if (now < startTime) {
-
+        if (now < start) {
             el.classList.remove("blink");
-            el.textContent = `⏳ Début dans ${formatCountdown(startTime - now)}`;
+            el.textContent = `⏳ Début dans ${formatCountdown(start - now)}`;
         }
-
-        else if (now <= endTime) {
-
+        else if (now <= end) {
             el.textContent = "🔥 EN COURS";
             el.classList.add("blink");
         }
-
         else {
-
             el.classList.remove("blink");
             el.textContent = "✅ TERMINÉ";
         }
@@ -222,19 +170,14 @@ function startRangeCountdown(dateStart, heureStart, dateEnd, heureEnd, elementId
         const now = Date.now();
 
         if (now < start) {
-
             el.classList.remove("blink");
             el.textContent = `⏳ ${formatCountdown(start - now)}`;
         }
-
         else if (now <= end) {
-
             el.textContent = "🔥 EN COURS";
             el.classList.add("blink");
         }
-
         else {
-
             el.classList.remove("blink");
             el.textContent = "✅ TERMINÉ";
         }
