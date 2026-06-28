@@ -1,188 +1,177 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const isSubPage = window.location.pathname.includes("/pages/");
+	const isSubPage = window.location.pathname.includes("/pages/");
 
-    const MATCHS_PATH = isSubPage ? "../matchs.json" : "matchs.json";
-    const EVENTS_PATH = isSubPage ? "../events.json" : "events.json";
-    const CHALLENGE_PATH = isSubPage ? "../challenge.json" : "challenge.json";
+	const MATCHS_PATH = isSubPage ? "../matchs.json" : "matchs.json";
+	const EVENTS_PATH = isSubPage ? "../events.json" : "events.json";
+	const CHALLENGE_PATH = isSubPage ? "../challenge.json" : "challenge.json";
 
-    // ✅ MENU
-    const hamburger = document.getElementById("hamburger");
-    const navLinks = document.getElementById("navLinks");
+	// ✅ MENU
+	const hamburger = document.getElementById("hamburger");
+	const navLinks = document.getElementById("navLinks");
 
-    if (hamburger) {
-        hamburger.addEventListener("click", () => {
-            navLinks.classList.toggle("active");
-        });
-    }
+	if (hamburger && navLinks) {
+		hamburger.addEventListener("click", () => {
+			navLinks.classList.toggle("active");
+		});
+	}
 
-    // =========================
-    // ✅ MATCH
-    // =========================
-    fetch(MATCHS_PATH)
-        .then(res => res.json())
-        .then(data => {
+	// =========================
+	// ✅ MATCH
+	// =========================
+	fetch(MATCHS_PATH)
+		.then(res => res.json())
+		.then(data => {
 
-            const now = new Date();
+			const now = new Date();
 
-            const next = data
-                .map(e => ({ ...e, dateObj: new Date(e.date + "T" + e.heure) }))
-                .filter(e => e.dateObj >= now)
-                .sort((a, b) => a.dateObj - b.dateObj)[0];
+			const next = data
+				.map(e => ({ ...e, dateObj: new Date(e.date + "T" + e.heure) }))
+				.filter(e => e.dateObj >= now)
+				.sort((a, b) => a.dateObj - b.dateObj)[0];
 
-            if (!next) return;
+			if (!next) return;
 
-            document.getElementById("match-title").textContent = next.title;
-            document.getElementById("match-date").textContent = "📅 " + formatDate(next.date);
-            document.getElementById("match-heure").textContent = "🕒 " + next.heure;
-            document.getElementById("match-image").src = next.image;
+			document.getElementById("match-title").textContent = next.title;
+			document.getElementById("match-date").textContent = "📅 " + formatDate(next.date);
+			document.getElementById("match-heure").textContent = "🕒 " + next.heure;
+			document.getElementById("match-image").src = next.image;
 
-            startMatchCountdown(next.date, next.heure, "match-countdown");
-        });
+			startMatchCountdown(next.date, next.heure, "match-countdown");
 
-    // =========================
-    // ✅ EVENT
-    // =========================
-    fetch(EVENTS_PATH)
-        .then(res => res.json())
-        .then(event => {
+			// ✅ BOUTONS
+			document.getElementById("calendarBtn").onclick = () => {
+				const date = next.date.replace(/-/g, "");
+				window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${next.title}&dates=${date}/${date}`);
+			};
 
-            if (!document.getElementById("event-title")) return;
+			document.getElementById("shareBtn").onclick = () => {
+				navigator.clipboard.writeText(`${next.title} ${next.date} ${next.heure}`);
+				alert("Copié ✅");
+			};
+		});
 
-            document.getElementById("event-title").textContent = event.title;
-            document.getElementById("event-date").textContent =
-                "📅 " + formatDate(event.date_start);
+	// =========================
+	// ✅ EVENT PAGE (LISTE)
+	// =========================
+	fetch(EVENTS_PATH)
+		.then(res => res.json())
+		.then(events => {
 
-            document.getElementById("event-heure").textContent =
-                "🕒 " + event.heure_start;
+			// 👉 PAGE EVENTS
+			const container = document.getElementById("events-container");
 
-            document.getElementById("event-image").src = event.image;
+			if (container && Array.isArray(events)) {
 
-            startRangeCountdown(
-                event.date_start,
-                event.heure_start,
-                event.date_end,
-                event.heure_end,
-                "event-countdown"
-            );
-        });
+				events.forEach(event => {
 
-    // =========================
-    // ✅ CHALLENGE
-    // =========================
-    fetch(CHALLENGE_PATH)
-        .then(res => res.json())
-        .then(challenge => {
+					const card = document.createElement("div");
+					card.classList.add("event-card");
 
-            document.getElementById("challenge-title").textContent = challenge.title;
-            document.getElementById("challenge-date").textContent =
-                "📅 " + formatDate(challenge.date_start) + " → " + formatDate(challenge.date_end);
+					card.innerHTML = `
+                        <img src="${isSubPage ? "../" + event.image : event.image}">
+                        <h3>${event.title}</h3>
+                        <p>📅 ${formatDate(event.date)}</p>
+                        <p>🕒 ${event.heure}</p>
+                    `;
 
-            document.getElementById("challenge-heure").textContent =
-                "🕒 " + challenge.heure_start + " → " + challenge.heure_end;
+					container.appendChild(card);
+				});
+			}
 
-            document.getElementById("challenge-image").src = challenge.image;
+			// 👉 ACCUEIL (1 EVENT)
+			if (!Array.isArray(events)) {
+				const event = events;
 
-            startRangeCountdown(
-                challenge.date_start,
-                challenge.heure_start,
-                challenge.date_end,
-                challenge.heure_end,
-                "challenge-countdown"
-            );
-        });
+				if (!document.getElementById("event-title")) return;
+
+				document.getElementById("event-title").textContent = event.title;
+				document.getElementById("event-date").textContent = "📅 " + formatDate(event.date_start);
+				document.getElementById("event-heure").textContent = "🕒 " + event.heure_start;
+				document.getElementById("event-image").src = event.image;
+
+				startRangeCountdown(
+					event.date_start,
+					event.heure_start,
+					event.date_end,
+					event.heure_end,
+					"event-countdown"
+				);
+			}
+		});
+
+	// =========================
+	// ✅ CHALLENGE
+	// =========================
+	fetch(CHALLENGE_PATH)
+		.then(res => res.json())
+		.then(c => {
+
+			document.getElementById("challenge-title").textContent = c.title;
+			document.getElementById("challenge-date").textContent =
+				"📅 " + formatDate(c.date_start) + " → " + formatDate(c.date_end);
+
+			document.getElementById("challenge-heure").textContent =
+				"🕒 " + c.heure_start + " → " + c.heure_end;
+
+			document.getElementById("challenge-image").src = c.image;
+
+			startRangeCountdown(
+				c.date_start,
+				c.heure_start,
+				c.date_end,
+				c.heure_end,
+				"challenge-countdown"
+			);
+		});
 
 });
 
 // =========================
-// ✅ FORMAT DATE
+// ✅ UTILS
 // =========================
 function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString("fr-FR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-    });
+	return new Date(dateStr).toLocaleDateString("fr-FR");
 }
 
-// =========================
-// ✅ FORMAT COUNTDOWN
-// =========================
 function formatCountdown(diff) {
-
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const m = Math.floor((diff / (1000 * 60)) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-
-    if (d > 0) return `${d}j ${h}h ${m}m ${s}s`;
-    if (h > 0) return `${h}h ${m}m ${s}s`;
-    return `${m}m ${s}s`;
+	const h = Math.floor(diff / 3600000);
+	const m = Math.floor((diff % 3600000) / 60000);
+	const s = Math.floor((diff % 60000) / 1000);
+	return `${h}h ${m}m ${s}s`;
 }
 
-// =========================
-// ✅ MATCH COUNTDOWN
-// =========================
-function startMatchCountdown(dateStr, heureStr, elementId) {
+function startMatchCountdown(date, heure, id) {
+	const el = document.getElementById(id);
+	if (!el) return;
 
-    const el = document.getElementById(elementId);
-    if (!el) return;
+	const base = new Date(`${date}T${heure}`).getTime();
+	const start = base - 900000;
+	const end = base + 900000;
 
-    const base = new Date(`${dateStr}T${heureStr}:00`).getTime();
-    const start = base - 15 * 60 * 1000;
-    const end = base + 15 * 60 * 1000;
+	setInterval(() => {
+		const now = Date.now();
 
-    function update() {
+		if (now < start) el.textContent = "⏳ " + formatCountdown(start - now);
+		else if (now <= end) el.textContent = "🔥 EN COURS";
+		else el.textContent = "✅ TERMINÉ";
 
-        const now = Date.now();
-
-        if (now < start) {
-            el.classList.remove("blink");
-            el.textContent = `⏳ Début dans ${formatCountdown(start - now)}`;
-        }
-        else if (now <= end) {
-            el.textContent = "🔥 EN COURS";
-            el.classList.add("blink");
-        }
-        else {
-            el.classList.remove("blink");
-            el.textContent = "✅ TERMINÉ";
-        }
-    }
-
-    update();
-    setInterval(update, 1000);
+	}, 1000);
 }
 
-// =========================
-// ✅ RANGE COUNTDOWN
-// =========================
-function startRangeCountdown(dateStart, heureStart, dateEnd, heureEnd, elementId) {
+function startRangeCountdown(ds, hs, de, he, id) {
+	const el = document.getElementById(id);
+	if (!el) return;
 
-    const el = document.getElementById(elementId);
-    if (!el) return;
+	const start = new Date(`${ds}T${hs}`).getTime();
+	const end = new Date(`${de}T${he}`).getTime();
 
-    const start = new Date(`${dateStart}T${heureStart}:00`).getTime();
-    const end = new Date(`${dateEnd}T${heureEnd}:00`).getTime();
+	setInterval(() => {
+		const now = Date.now();
 
-    function update() {
+		if (now < start) el.textContent = "⏳ " + formatCountdown(start - now);
+		else if (now <= end) el.textContent = "🔥 EN COURS";
+		else el.textContent = "✅ TERMINÉ";
 
-        const now = Date.now();
-
-        if (now < start) {
-            el.classList.remove("blink");
-            el.textContent = `⏳ ${formatCountdown(start - now)}`;
-        }
-        else if (now <= end) {
-            el.textContent = "🔥 EN COURS";
-            el.classList.add("blink");
-        }
-        else {
-            el.classList.remove("blink");
-            el.textContent = "✅ TERMINÉ";
-        }
-    }
-
-    update();
-    setInterval(update, 1000);
+	}, 1000);
 }

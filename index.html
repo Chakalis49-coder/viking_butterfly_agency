@@ -2,110 +2,110 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="img/favicon.png">
-    <title>Viking Butterfly Agency ༒︎</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="img/favicon.png">
+	<title>Viking Butterfly Agency ༒︎</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="index.html" class="logo">༒︎ Viking Butterfly Agency</a>
+	<nav class="navbar">
+		<div class="nav-container">
+			<a href="index.html" class="logo">༒︎ Viking Butterfly Agency</a>
 
-        <div class="nav-links" id="navLinks">
-            <a href="index.html" class="active">Accueil</a>
-            <a href="recrutement.html">Recrutement</a>
-            <a href="teams.html">Teams</a>
-            <a href="pages/evenements.html">Évènements</a>
-        </div>
+			<div class="nav-links" id="navLinks">
+				<a href="index.html" class="active">Accueil</a>
+				<a href="recrutement.html">Recrutement</a>
+				<a href="teams.html">Teams</a>
+				<a href="pages/evenements.html">Évènements</a>
+			</div>
 
-        <div class="hamburger" id="hamburger">☰</div>
-    </div>
-</nav>
+			<div class="hamburger" id="hamburger">☰</div>
+		</div>
+	</nav>
 
-<div class="container-global">
+	<div class="container-global">
 
-    <div class="layout">
+		<div class="layout">
 
-        <!-- TEXTE -->
-        <div class="text-section">
-            <section class="hero">
-                <h1>Viking Butterfly Agency ༒︎</h1>
-                <p>Une famille. Une force. Une ascension.</p>
-            </section>
+			<!-- TEXTE -->
+			<div class="text-section">
+				<section class="hero">
+					<h1>Viking Butterfly Agency ༒︎</h1>
+					<p>Une famille. Une force. Une ascension.</p>
+				</section>
 
-            <section class="description">
-                <p>
-                    Bienvenue dans la Viking Butterfly Agency ༒︎.
-                    Une élite du live TikTok où stratégie, puissance et cohésion forgent les créateurs de demain.
-                </p>
-            </section>
-        </div>
+				<section class="description">
+					<p>
+						Bienvenue dans la Viking Butterfly Agency.
+					</p>
+				</section>
+			</div>
 
-        <!-- MATCH -->
-        <div class="match-widget">
-            <div class="match-image">
-                <img id="match-image">
-            </div>
-            <div class="content">
-                <h3>Prochain Match</h3>
-                <p id="match-title"></p>
-                <p id="match-date"></p>
-                <p id="match-heure"></p>
-                <p id="match-countdown" class="countdown"></p>
-            </div>
-        </div>
+			<!-- MATCH -->
+			<div class="match-widget">
+				<div class="event-image">
+					<img id="match-image">
+				</div>
+				<div class="content">
+					<h3>Prochain Match</h3>
+					<p id="match-title"></p>
+					<p id="match-date"></p>
+					<p id="match-heure"></p>
+					<p id="match-countdown" class="countdown"></p>
 
-        <!-- EVENT -->
-        <div class="event-widget">
-            <div class="event-image">
-                <img id="event-image">
-            </div>
-            <div class="content">
-                <h3>Prochain Event</h3>
-                <p id="event-title"></p>
-                <p id="event-date"></p>
-                <p id="event-heure"></p>
-                <p id="event-countdown" class="countdown"></p>
-            </div>
-        </div>
+					<button id="calendarBtn">Ajouter au calendrier</button>
+					<button id="shareBtn">Partager</button>
+				</div>
+			</div>
 
-        <!-- TREE -->
-        <div class="tree-section">
-            <section class="family-tree">
-                <h2>La Tribu</h2>
-                <div id="tree"></div>
-            </section>
-        </div>
+			<!-- EVENT -->
+			<div class="event-widget">
+				<div class="event-image">
+					<img id="event-image">
+				</div>
+				<div class="content">
+					<h3>Prochain Event</h3>
+					<p id="event-title"></p>
+					<p id="event-date"></p>
+					<p id="event-heure"></p>
+					<p id="event-countdown" class="countdown"></p>
+				</div>
+			</div>
 
-        <!-- CHALLENGE -->
-        <div class="challenge-section">
-            <div class="challenge-card">
-                <div class="event-image">
-                    <img id="challenge-image">
-                </div>
-                <div class="challenge-content">
-                    <h3 id="challenge-title"></h3>
-                    <p id="challenge-date"></p>
-                    <p id="challenge-heure"></p>
-                    <p id="challenge-countdown" class="countdown"></p>
-                </div>
-            </div>
-        </div>
+			<!-- TREE -->
+			<div class="tree-section">
+				<h2>La Tribu</h2>
+				<div id="tree"></div>
+			</div>
 
-    </div>
+			<!-- CHALLENGE -->
+			<div class="challenge-section">
+				<div class="challenge-card">
+					<div class="event-image">
+						<img id="challenge-image">
+					</div>
+					<div class="challenge-content">
+						<h3 id="challenge-title"></h3>
+						<p id="challenge-date"></p>
+						<p id="challenge-heure"></p>
+						<p id="challenge-countdown" class="countdown"></p>
+					</div>
+				</div>
+			</div>
 
-</div>
+		</div>
+	</div>
 
-<script src="script.js"></script>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="js/tree.js"></script>
+	<script src="script.js"></script>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script src="js/tree.js"></script>
 
 </body>
+
 </html>
