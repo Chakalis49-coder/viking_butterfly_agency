@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("event-heure").textContent = "🕒 " + nextEvent.heure;
                 document.getElementById("event-image").src = nextEvent.image;
 
+                const el = document.getElementById("event-countdown");
+                if (el) el.classList.add("countdown");
+
                 startMatchCountdown(nextEvent.date, nextEvent.heure, "event-countdown");
             }
 
@@ -62,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     card.classList.add("event-card");
 
                     const id = "count-" + event.date.replace(/-/g, "") + event.heure.replace(":", "");
-
                     const imagePath = isSubPage ? "../" + event.image : event.image;
 
                     card.innerHTML = `
@@ -80,14 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     startMatchCountdown(event.date, event.heure, id);
 
-                    // CALENDAR
                     card.querySelector(".calendar-btn").addEventListener("click", () => {
                         const date = event.date.replace(/-/g, "");
                         const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${date}/${date}`;
                         window.open(url, "_blank");
                     });
 
-                    // SHARE
                     card.querySelector(".share-btn").addEventListener("click", async () => {
 
                         const text = `${event.title}
@@ -97,26 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
 🔥 Rejoins-nous en live !
 https://www.tiktok.com/${event.alias}`;
 
-                        const imageUrl = isSubPage ? "../" + event.image : event.image;
-
-                        if (navigator.share && navigator.canShare) {
-                            try {
-                                const response = await fetch(imageUrl);
-                                const blob = await response.blob();
-                                const file = new File([blob], "event.jpg", { type: blob.type });
-
-                                await navigator.share({
-                                    title: event.title,
-                                    text: text,
-                                    files: [file]
-                                });
-                            } catch {
-                                await navigator.share({
-                                    title: event.title,
-                                    text: text,
-                                    url: `https://www.tiktok.com/${event.alias}`
-                                });
-                            }
+                        if (navigator.share) {
+                            await navigator.share({ title: event.title, text });
                         } else {
                             navigator.clipboard.writeText(text);
                             alert("Texte copié 📋");
@@ -127,36 +109,34 @@ https://www.tiktok.com/${event.alias}`;
         });
 
     // =========================
-    // ✅ EVENTS + CHALLENGE
+    // ✅ CHALLENGE (PRIORITAIRE)
     // =========================
-    function loadRange(path) {
-        fetch(path)
-            .then(res => res.json())
-            .then(data => {
+    fetch(CHALLENGE_PATH)
+        .then(res => res.json())
+        .then(data => {
 
-                if (!document.getElementById("challenge-title")) return;
+            if (!document.getElementById("challenge-title")) return;
 
-                document.getElementById("challenge-title").textContent = data.title;
-                document.getElementById("challenge-date").textContent =
-                    "📅 " + formatDate(data.date_start) + " → " + formatDate(data.date_end);
+            document.getElementById("challenge-title").textContent = data.title;
+            document.getElementById("challenge-date").textContent =
+                "📅 " + formatDate(data.date_start) + " → " + formatDate(data.date_end);
 
-                document.getElementById("challenge-heure").textContent =
-                    "🕒 " + data.heure_start + " → " + data.heure_end;
+            document.getElementById("challenge-heure").textContent =
+                "🕒 " + data.heure_start + " → " + data.heure_end;
 
-                document.getElementById("challenge-image").src = data.image;
+            document.getElementById("challenge-image").src = data.image;
 
-                startRangeCountdown(
-                    data.date_start,
-                    data.heure_start,
-                    data.date_end,
-                    data.heure_end,
-                    "challenge-countdown"
-                );
-            });
-    }
+            const el = document.getElementById("challenge-countdown");
+            if (el) el.classList.add("countdown");
 
-    loadRange(EVENTS_PATH);
-    loadRange(CHALLENGE_PATH);
+            startRangeCountdown(
+                data.date_start,
+                data.heure_start,
+                data.date_end,
+                data.heure_end,
+                "challenge-countdown"
+            );
+        });
 
 });
 
@@ -173,7 +153,7 @@ function formatDate(dateStr) {
 }
 
 // =========================
-// ✅ FORMAT COUNTDOWN SMART
+// ✅ FORMAT COUNTDOWN
 // =========================
 function formatCountdown(diff) {
 
@@ -206,11 +186,10 @@ function startMatchCountdown(dateStr, heureStr, elementId) {
         if (now < startTime) {
 
             el.classList.remove("blink");
-            const diff = startTime - now;
-            el.textContent = `⏳ Début dans ${formatCountdown(diff)}`;
+            el.textContent = `⏳ Début dans ${formatCountdown(startTime - now)}`;
         }
 
-        else if (now >= startTime && now <= endTime) {
+        else if (now <= endTime) {
 
             el.textContent = "🔥 EN COURS";
             el.classList.add("blink");
@@ -245,11 +224,10 @@ function startRangeCountdown(dateStart, heureStart, dateEnd, heureEnd, elementId
         if (now < start) {
 
             el.classList.remove("blink");
-            const diff = start - now;
-            el.textContent = `⏳ ${formatCountdown(diff)}`;
+            el.textContent = `⏳ ${formatCountdown(start - now)}`;
         }
 
-        else if (now >= start && now <= end) {
+        else if (now <= end) {
 
             el.textContent = "🔥 EN COURS";
             el.classList.add("blink");
