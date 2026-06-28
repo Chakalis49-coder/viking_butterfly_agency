@@ -1,6 +1,8 @@
 {
   "title": "Défi Agence 🦋",
-  "date": "2026-05-25",
-  "heure": "23:59",
-  "image": "img/defi_s21_poirier.jpeg"
+  "date_start": "2026-06-28",
+  "date_end": "2026-07-05",
+  "heure_start": "18:00",
+  "heure_end": "18:00",
+  "image": "img/challenges/defi_s21_poirier.jpeg"
 }

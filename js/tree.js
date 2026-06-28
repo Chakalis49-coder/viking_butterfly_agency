@@ -14,28 +14,17 @@ const svg = d3.select("#tree")
 // ------------------
 
 const nodes = [
-    { id: "profil-fondateur1", name: "Fondateur Pépito", x: 283, y: 80 + offsetY, role: "founder", img: "img/pepito_blason.jpeg" },
-    { id: "profil-fondateur2", name: "Fondateur Vikédium", x: 567, y: 80 + offsetY, role: "founder", img: "img/vikidium_blason.jpeg" },
+    { id: "profil-fondateur1", name: "Fondateur Vikédium", x: 283, y: 80 + offsetY, role: "founder", img: "img/tree/0.1_Vikedium.png" },
+    { id: "profil-fondateur2", name: "Fondateur Ragnar", x: 567, y: 80 + offsetY, role: "founder", img: "img/tree/0.2_Ragnar.png" },
 
-    { id: "profil-directrice1", name: "Directrice Papillons", x: 150, y: 220 + offsetY, role: "director", img: "img/papillion_blason.jpeg" },
-    { id: "profil-directrice2", name: "Directrice Pockettelande", x: 700, y: 220 + offsetY, role: "director", img: "img/pocastich_blason.jpeg" },
+    { id: "profil-direction1", name: "Directeur Chakalis49", x: 150, y: 220 + offsetY, role: "director", img: "img/tree/0.3_Chakalis49.png" },
+    { id: "profil-direction2", name: "Directrice Licorne", x: 700, y: 220 + offsetY, role: "director", img: "img/tree/0.4_Licorne.png" },
 		
-    { id: "profil-coordinateur", name: "Coordinateur Chakalis49", x: 425, y: 360 + offsetY, role: "coordinateur", img: "img/coordinateur.png" },
+    { id: "profil-manager1", name: "Manageuse Manon", x: 425, y: 360 + offsetY, role: "manager", img: "img/tree/0.5_Manon.png" },
 
-    { id: "profil-manager1", name: "Manageuse Nadia", x: 150, y: 520 + offsetY, role: "manager", img: "img/nadia_blason.jpeg" },
-    { id: "profil-manager2", name: "Manageuse Licorne", x: 425, y: 520 + offsetY, role: "manager", img: "img/licorne_blason.jpeg" },
-    { id: "profil-manager3", name: "Manageur Jerem", x: 700, y: 520 + offsetY, role: "manager", img: "img/jerem_blason.jpeg" },
-
-    { id: "profil-agent_tony", name: "Agent Tony", x: 150, y: 640 + offsetY, img: "img/tony_blason.jpeg" },
-
-    { id: "profil-agent_manon", name: "Agente Manon", x: 425, y: 640 + offsetY, img: "img/manon_blason.jpeg" },
-		{ id: "profil-agent_chantal", name: "Agent Chantal", x: 425, y: 780 + offsetY, img: "img/chantal_blason.jpeg" },
-		{ id: "profil-agent_emi", name: "Agente Émi", x: 425, y: 920 + offsetY, img: "img/emi_blason.jpeg" },
-		{ id: "profil-agent_chelsea", name: "Agent Chelsea", x: 425, y: 1060 + offsetY, img: "img/chelsea_blason.jpeg" },
-		
-    { id: "profil-agent_artemis", name: "Agent Artémis", x: 700, y: 640 + offsetY, img: "img/agent_artemis.jpeg" },
-		{ id: "profil-agent_loup_blanc", name: "Agent Loup Blanc", x: 700, y: 780 + offsetY, img: "img/loup_blanc_blason.jpeg" },
-    { id: "profil-agent_loulou", name: "Agent Loulou", x: 700, y: 920 + offsetY, img: "img/agent_loulou.jpeg" }
+    { id: "profil-agent_odin", name: "Agent Loulou", x: 150, y: 520 + offsetY, img: "img/tree/Odin_Loulou.png" },
+    { id: "profil-agent_loki", name: "Agente Gwen", x: 425, y: 520 + offsetY, img: "img/tree/Loki_Gwen.png" },
+    { id: "profil-agent_guerrier", name: "Agente Dine", x: 700, y: 520 + offsetY, img: "img/tree/Guerrier_Dine.png" }
 ];
 
 // ------------------
@@ -43,31 +32,19 @@ const nodes = [
 // ------------------
 
 const links = [
-    ["profil-fondateur1", "profil-directrice1"],
-    ["profil-fondateur1", "profil-directrice2"],
-    ["profil-fondateur2", "profil-directrice1"],
-    ["profil-fondateur2", "profil-directrice2"],
+    ["profil-fondateur1", "profil-direction1"],
+    ["profil-fondateur1", "profil-direction2"],
+    ["profil-fondateur2", "profil-direction1"],
+    ["profil-fondateur2", "profil-direction2"],
 
-    ["profil-directrice1", "profil-manager1"],
-    ["profil-directrice1", "profil-manager2"],
-    ["profil-directrice1", "profil-manager3"],
-    ["profil-directrice1", "profil-coordinateur"],
+    ["profil-direction1", "profil-manager1"],
+		["profil-direction1", "profil-manager1"],
+    ["profil-direction2", "profil-manager1"],
+    ["profil-direction2", "profil-manager1"],
 
-    ["profil-directrice2", "profil-manager1"],
-    ["profil-directrice2", "profil-manager2"],
-    ["profil-directrice2", "profil-manager3"],
-    ["profil-directrice2", "profil-coordinateur"],
-
-		["profil-manager1", "profil-agent_tony"],
-
-    ["profil-manager2", "profil-agent_manon"],
-    ["profil-manager2", "profil-agent_chantal"],
-    ["profil-manager2", "profil-agent_emi"],
-    ["profil-manager2", "profil-agent_chelsea"],
-
-    ["profil-manager3", "profil-agent_artemis"],
-    ["profil-manager3", "profil-agent_loup_blanc"],
-    ["profil-manager3", "profil-agent_loulou"]
+		["profil-manager1", "profil-agent_odin"],
+    ["profil-manager1", "profil-agent_loki"],
+    ["profil-manager1", "profil-agent_guerrier"]
 ];
 
 // ------------------
@@ -77,11 +54,11 @@ const links = [
 function getColor(sourceId) {
     const node = nodes.find(n => n.id === sourceId);
 
-    if (!node) return "#00cfff";
-    if (node.role === "director") return "#00ffcc";
-    if (node.role === "manager") return "#ff00cc";
+    if (!node) return "#d4af37";
+    if (node.role === "director") return "#d4af37";
+    if (node.role === "manager") return "#c0c0c0";
 
-    return "#00cfff";
+    return "#d4af37";
 }
 
 // ------------------
@@ -154,11 +131,10 @@ node.append("rect")
     .attr("rx", 12)
     .attr("fill", "rgba(0,0,0,0.6)")
     .attr("stroke", d => {
-        if (d.role === "founder") return "#00cfff";
-        if (d.role === "director") return "#00ffcc";
-        if (d.role === "coordinateur") return "#ffffff";
-        if (d.role === "manager") return "#ff00cc";
-        return "#ffffff33";
+        if (d.role === "founder") return "#d4af37";
+        if (d.role === "director") return "#d4af37";
+        if (d.role === "manager") return "#c0c0c0";
+        return "#c0c0c0";
     })
     .attr("stroke-width", 2);
 
